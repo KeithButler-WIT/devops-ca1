@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# TODO: change from os.system (Depreciated)
+
 import sys
 import os
 import boto3
@@ -43,13 +45,12 @@ def createInstance() -> None:
         )
         # instance.wait_until_running()
         print ('ec2 instance created.')
-        print (instance[0].id)
+        print ('Instance ID:', instance[0].id)
         print ('Opening ec2 website in web browser.')
         webbrowser.open('http://' + instance.public_ip_address) # Cross platform
     except Exception as error:
         print (error)
 
-# projectx-bucket1-$(date +'%F'-'%s')
 def createBucket() -> None:
     print ('Creating the s3 bucket.')
     for bucket_name in sys.argv[1:]:
@@ -59,6 +60,7 @@ def createBucket() -> None:
                     'LocationConstraint': 'eu-west-1'
                 }
             )
+            # Waits for the bucket to exist
             response = s3.Waiter.BucketExists(bucket=bucket_name)
             print ('s3 bucket created.')
             print (response)
