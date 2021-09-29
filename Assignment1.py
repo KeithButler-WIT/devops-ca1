@@ -44,6 +44,8 @@ def createInstance() -> None:
         # instance.wait_until_running()
         print ('ec2 instance created.')
         print (instance[0].id)
+        print ('Opening ec2 website in web browser.')
+        webbrowser.open('http://' + instance.public_ip_address) # Cross platform
     except Exception as error:
         print (error)
 
@@ -75,11 +77,11 @@ def putInBucket() -> None:
         print ('Sending files to s3 bucket.')
         response = s3.Object(bucket_name, 'assign1.jpg').put(Body=open('assign1.jpg', 'rb'))
         response = s3.Object(bucket_name, 'index.html').put(Body=open('index.html', 'rb'))
-        print ('Opening index.html in web browser.')
+        print ('Opening s3 website in web browser.')
         webbrowser.open('http://' + bucket_name + '.s3-website-eu-west-1.amazonaws.com')  # Cross platform
         print (response)
         print ('Removing unneaded file from host computer.')
-        os.system('rm assign1.jpg')
+        os.system('rm assign1.jpg') # Cleaning up directory
     except Exception as error:
         print (error)
 
