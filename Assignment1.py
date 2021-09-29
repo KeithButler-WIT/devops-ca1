@@ -76,7 +76,9 @@ def putInBucket() -> None:
         # Adds two files from the current directory  to the s3 bucket
         print ('Sending files to s3 bucket.')
         response = s3.Object(bucket_name, 'assign1.jpg').put(Body=open('assign1.jpg', 'rb'))
+        print (response)
         response = s3.Object(bucket_name, 'index.html').put(Body=open('index.html', 'rb'))
+        print (response)
         print ('Opening s3 website in web browser.')
         webbrowser.open('http://' + bucket_name + '.s3-website-eu-west-1.amazonaws.com')  # Cross platform
         print (response)
