@@ -58,13 +58,11 @@ def ec2Setup() -> None:
         instanceIP = instance[0].public_ip_address
         print ('Instance ID:', instance[0].id, '\nInstance IP:', instanceIP)
 
-        # TODO
-
         # Adding required files to the instance
         print('Curling image')
         subprocess.run(["ssh -o StrictHostKeyChecking=no ec2-user@" + instanceIP + " 'curl -o image.jpg http://devops.witdemo.net/image.jpg'"],shell=True)
         print('Copying index.html')
-        subprocess.run(["scp " + "index.html " + "ec2-user@" + instanceIP + ":/home/ec2-user/index.html"],shell=True)
+        subprocess.run(["scp index.html " + "ec2-user@" + instanceIP + ":/home/ec2-user/index.html"],shell=True)
         # subprocess.run(["ssh " + "ec2-user@" + instanceIP + " 'sudo mv index.html /var/www/html/'"],shell=True)
         print('Moving index.html')
         subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo mkdir /var/www'"],shell=True)
@@ -74,25 +72,34 @@ def ec2Setup() -> None:
         print(error)
 
     try:
-        # TODO
         # Metadata
         # subprocess.run(["ssh ec2-user@" + instanceIP + " 'curl http://" + instanceIP + "/latest/meta-data/local-ipv4 >> index.html'"],shell=True)
         print ('Adding metadata to index file')
-        subprocess.run(["ssh ec2-user@" + instanceIP + " 'sudo curl http://169.254.169.254/latest/meta-data/local-ipv4 >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo echo \'Hostname:\' >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo curl http://169.254.169.254/latest/meta-data/hostname >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo echo \'Instance ID:\' >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo curl http://169.254.169.254/latest/meta-data/instance-id >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo echo \'Instance type:\' >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo curl http://169.254.169.254/latest/meta-data/instance-type >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo echo \'Local-ipv4:\' >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo curl http://169.254.169.254/latest/meta-data/local-ipv4 >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo echo \'Mac address:\' >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo curl http://169.254.169.254/latest/meta-data/mac >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo echo \'Region:\' >> /var/www/html/index.html'"],shell=True)
+        subprocess.run(["ssh -t ec2-user@" + instanceIP + " 'sudo curl http://169.254.169.254/latest/meta-data/placement/region >> /var/www/html/index.html'"],shell=True)
     except Exception as error:
         print(error)
-        print('Metadata')
+        print('Metadata failed to gather')
 
     try:
         # Monitor
-        # TODO
         print ('Copying monitor.sh to instance.')
-        subprocess.run(["scp ", "monitor.sh", "ec2-user@" + instanceIP + ":/home/ec2-user/monitor.sh"],shell=True)
+        subprocess.run(["scp monitor.sh ec2-user@" + instanceIP + ":/home/ec2-user/monitor.sh"],shell=True)
         # setting monitor file permissions
         print ('Setting correct permissions')
         subprocess.run(["ssh ec2-user@" + instanceIP + " 'chmod 700 monitor.sh'"],shell=True)
         print ('Running monitor.sh')
-        subprocess.run(["ssh -o ec2-user@" + instanceIP + " './monitor.sh'"],shell=True)
+        subprocess.run(["ssh ec2-user@" + instanceIP + " './monitor.sh'"],shell=True)
     except Exception as error:
         print(error)
         print('Monitoring failed')
